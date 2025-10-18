@@ -1,0 +1,25 @@
+﻿## Ignore Visual Studio temporary files
+.vs/
+bin/
+obj/
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+bld/
+[Bb]in/
+[Oo]bj/
+
+## NuGet
+[Nn]u[Gg]et/
+*.nupkg
