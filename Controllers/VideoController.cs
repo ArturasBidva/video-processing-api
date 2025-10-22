@@ -4,18 +4,19 @@ using System.Security.Claims;
 using video_processing_api.Services;
 using video_processing_api.Dto.Requests;
 using video_processing_api.Dto.Responses;
+using video_processing_api.Models;
+
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
 public class VideoController : ControllerBase
 {
     private readonly VideoService _videoService;
-    //private readonly IBackgroundVideoProcessor _videoProcessor;
+    private readonly IBackgroundVideoProcessor _videoProcessor;
 
     public VideoController(VideoService videoService)
     {
         _videoService = videoService;
-        //_videoProcessor = videoProcessor;
     }
 
     [HttpPost]
@@ -67,14 +68,27 @@ public class VideoController : ControllerBase
             return Unauthorized("Invalid user ID in token");
         }
 
-        if (!await _videoService.CanProcessVideoAsync(id, userId))
+        // Check if video exists and user owns it
+        var video = await _videoService.GetVideoAsync(id, userId);
+        if (video == null)
         {
-            return BadRequest("Video cannot be processed");
+            return NotFound("Video not found");
         }
 
-       
-       // await _videoProcessor.QueueVideoProcessingAsync(id);
+        // Check if video can be processed (Uploaded or Failed status)
+        if (video.Status != VideoStatus.Uploaded && video.Status != VideoStatus.Failed)
+        {
+            return BadRequest("Video can only be processed when in Uploaded or Failed status");
+        }
 
-        return Accepted(new { message = "Video processing started", videoId = id });
+        // Update status to QueuedForProcessing
+        await _videoService.UpdateVideoStatusAsync(id, VideoStatus.QueuedForProcessing);
+
+        return Accepted(new
+        {
+            message = "Video processing started",
+            videoId = id,
+            status = "QueuedForProcessing"
+        });
     }
 }

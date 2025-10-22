@@ -18,6 +18,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ValidationService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddHostedService<VideoProcessingService>();
+builder.Services.AddScoped<VideoService>();
 
 // jwt authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
